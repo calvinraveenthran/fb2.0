@@ -13,16 +13,17 @@ import Parse
 import ParseUI
 
 
-class MessageViewController:  UIViewController{
+class MessageViewController:  UIViewController, UITextFieldDelegate {
     private var messages: [Message] = []
     var conversationId: String = ""
+    var caterer: String = ""
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var messageTextField: UITextField!
     
     @IBAction func sendMessageButton(sender: AnyObject) {
     
-        let newMessage = Message(sender: "", conversationId: "", message: "")
+        let newMessage = Message(sender: "", conversationId: "", message: "", receiver: "")
         var messageSend = PFObject(className:"Messages")
         
         if let content = self.messageTextField?.text {
@@ -30,10 +31,13 @@ class MessageViewController:  UIViewController{
             messageSend["content"] = newMessage.message
             
             newMessage.sender = PFUser.currentUser()?.username
-            messageSend["sender"] = newMessage.sender
+            messageSend["from"] = newMessage.sender
             
             newMessage.conversationId = self.conversationId
             messageSend["messageId"] = newMessage.conversationId
+            
+            newMessage.receiver = self.caterer
+            messageSend["to"] = newMessage.receiver
             
             messageSend["read"] = false
         }
@@ -60,6 +64,12 @@ class MessageViewController:  UIViewController{
         super.viewDidLoad()
         tableView.dataSource = self
         self.LoadMessages()
+        self.messageTextField.delegate = self
+    }
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        self.view.endEditing(true)
+        return false
     }
     
     func LoadMessages(){
@@ -85,10 +95,11 @@ class MessageViewController:  UIViewController{
                     //  loop through the objects array
                     //  Retrieve the values from the PFObject
                     for conversationProperty in objects!{
-                        let sender:String? = (conversationProperty as PFObject)["sender"] as? String
+                        let sender:String? = (conversationProperty as PFObject)["from"] as? String
                         let message:String? = (conversationProperty as PFObject)["content"] as? String
+                        let receiver:String? = (conversationProperty as PFObject)["to"] as? String
                         
-                        let loadedMenuItem = Message(sender: sender!, conversationId: self.conversationId, message: message!)
+                        let loadedMenuItem = Message(sender: sender!, conversationId: self.conversationId, message: message!, receiver: receiver!)
                         self.messages.append(loadedMenuItem)
                     }
                     
