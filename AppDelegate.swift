@@ -31,7 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         PFAnalytics.trackAppOpenedWithLaunchOptions(launchOptions);
         
         
-        
+        PayPalMobile.initializeWithClientIdsForEnvironments([PayPalEnvironmentProduction: "freshbites347@gmail.com",PayPalEnvironmentSandbox: "ATG758G2etPnkIpkvqhxkYnDYG7XDLIffJbjirscbLJCAfmpbPhQKkrfeV1rbaqoiPlT-dn9uqPD-Tg_"])
         return true
     }
 
